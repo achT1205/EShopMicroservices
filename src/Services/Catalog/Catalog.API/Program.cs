@@ -1,13 +1,19 @@
+using BuildingBlocks.Behaviors;
+
 var builder = WebApplication.CreateBuilder(args);
 
 //Add service to the dependence injection container (DI)
 
-builder.Services.AddCarter();
+
+var assembly = typeof(Program).Assembly;
 builder.Services.AddMediatR(config =>
 {
-    config.RegisterServicesFromAssembly(typeof(Program).Assembly);
-
+    config.RegisterServicesFromAssembly(assembly);
+    config.AddOpenBehavior(typeof(ValidationBehavior<,>));
 });
+builder.Services.AddValidatorsFromAssembly(assembly);
+
+builder.Services.AddCarter();
 builder.Services.AddMarten((options) =>
 {
     options.Connection(builder.Configuration.GetConnectionString("Database")!);
