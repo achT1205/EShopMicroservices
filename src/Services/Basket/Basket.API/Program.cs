@@ -1,7 +1,9 @@
+using HealthChecks.UI.Client;
+using Microsoft.AspNetCore.Diagnostics.HealthChecks;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
-builder.Services.AddScoped<IBasketRepository, BasketRepository>();
 var assembly = typeof(Program).Assembly;
 builder.Services.AddMediatR(config =>
 {
@@ -18,14 +20,19 @@ builder.Services.AddMarten((options) =>
     options.Schema.For<ShoppingCart>().Identity(_ => _.UserName);
 }).UseLightweightSessions();
 
-//if (builder.Environment.IsDevelopment())
-//{
-//    builder.Services.InitializeMartenWith<CatalogInitialData>();
-//}
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
 builder.Services.AddSwaggerGen();
+builder.Services.AddScoped<IBasketRepository, BasketRepository>();
+builder.Services.Decorate<IBasketRepository, CachedBasketRepository>();
+builder.Services.AddStackExchangeRedisCache(options=>
+{
+    options.Configuration = builder.Configuration.GetConnectionString("Redis");
+});
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
+builder.Services.AddHealthChecks()
+    .AddNpgSql(builder.Configuration.GetConnectionString("Database")!)
+    .AddRedis(builder.Configuration.GetConnectionString("Redis")!);
 
 var app = builder.Build();
 
@@ -39,5 +46,9 @@ if (app.Environment.IsDevelopment())
 app.UseHttpsRedirection();
 app.MapCarter();
 app.UseExceptionHandler(options => { });
+app.UseHealthChecks("/health", new HealthCheckOptions
+{
+    ResponseWriter = UIResponseWriter.WriteHealthCheckUIResponse
+});
 app.Run();
 
