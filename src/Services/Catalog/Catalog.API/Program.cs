@@ -5,7 +5,6 @@ var builder = WebApplication.CreateBuilder(args);
 
 //Add service to the dependence injection container (DI)
 
-
 var assembly = typeof(Program).Assembly;
 builder.Services.AddMediatR(config =>
 {
@@ -26,9 +25,6 @@ if (builder.Environment.IsDevelopment())
     builder.Services.InitializeMartenWith<CatalogInitialData>();
 }
 
-builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
-
 builder.Services.AddExceptionHandler<CustomExceptionHandler>();
 
 builder.Services.AddHealthChecks()
@@ -38,12 +34,6 @@ builder.Services.AddHealthChecks()
 var app = builder.Build();
 
 //Configure the HTTP request pipeline
-
-if (app.Environment.IsDevelopment())
-{
-    app.UseSwagger();
-    app.UseSwaggerUI();
-}
 
 app.MapCarter();
 
