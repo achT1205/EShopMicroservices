@@ -12,7 +12,7 @@ services:
     image: redis
   
   orderdb:
-    image: mcr.microsoft.com/mssql/server:2022-latest
+    image: mcr.microsoft.com/azure-sql-edge:latest
 
   catalog.api:
     image: ${DOCKER_REGISTRY-}catalogapi
@@ -35,7 +35,6 @@ services:
 volumes:
   postgres_catalog:
   postgres_basket:
-  sql-server-order:
   
 
 
