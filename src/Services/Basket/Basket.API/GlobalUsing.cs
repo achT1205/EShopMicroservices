@@ -10,3 +10,7 @@ global using BuildingBlocks.Exceptions;
 global using Basket.API.Exception;
 global using Basket.API.Data;
 global using BuildingBlocks.Exceptions.Handler;
+global using Basket.API.Dtos;
+global using BuildingBlocks.Messaging.Events;
+global using MassTransit;
+
