@@ -1,1 +1,0 @@
-﻿namespace Ordering.API.Endpoints;
